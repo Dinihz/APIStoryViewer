@@ -1,13 +1,12 @@
 import fetchData from "./fetchData.js";
-async function hadleData() {
-    const data = await fetchData("https://api.origamid.dev/json/transacoes.json");
-    console.log(data);
-    if (data) {
-        data.forEach((item) => {
-            console.log(item["Forma de Pagamento"]);
-        });
-    }
-    console.log("codigo continuou");
+import normalizeTransaction from "./normalizeTransaction.js";
+async function handleData() {
+    const data = await fetchData("https://api.origamid.dev/json/transacoes.json?");
+    if (!data)
+        return;
+    const transactions = data.map(normalizeTransaction);
+    console.log(transactions);
+    transactions.forEach((item) => { });
 }
-hadleData();
+handleData();
 //# sourceMappingURL=script.js.map
