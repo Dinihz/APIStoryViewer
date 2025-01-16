@@ -23,7 +23,7 @@ declare global {
   interface Transaction {
     name: string;
     id: number;
-    date: string;
+    date: Date;
     status: StatusTransaction;
     email: string;
     coin: string;
@@ -33,12 +33,26 @@ declare global {
   }
 }
 
-export default function normalizeTransaction(transaction: TransactionAPI) {
+function normalizeStatus(status: string): StatusTransaction {
+  switch (status) {
+    case "Paga":
+    case "Recusada pela operadora de cartão":
+    case "Aguardando pagamento":
+    case "Estornada":
+      return status;
+    default:
+      throw new Error(`Status inválido: ${status}`);
+  }
+}
+
+export default function normalizeTransaction(
+  transaction: TransactionAPI,
+): Transaction {
   return {
     name: transaction.Nome,
     id: transaction.ID,
     date: stringToDate(transaction.Data),
-    status: transaction.Status,
+    status: normalizeStatus(transaction.Status),
     email: transaction.Email,
     coin: transaction["Valor (R$)"],
     value: coinToNumber(transaction["Valor (R$)"]),
