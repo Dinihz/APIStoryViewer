@@ -1,6 +1,7 @@
 import fetchData from "./fetchData.js";
 import normalizeTransaction from "./normalizeTransaction.js";
 import Statistics from "./Statistics.js";
+import { CountList } from "./countBy.js";
 
 async function handleData() {
   const data = await fetchData<TransactionAPI[]>(
@@ -8,26 +9,46 @@ async function handleData() {
   );
   if (!data) return;
   const transactions = data.map(normalizeTransaction);
-  console.log(transactions);
   fillTable(transactions);
   fillStatistics(transactions);
+}
+
+function fillList(list: CountList, containerId: string): void {
+  const containerElement = document.getElementById(containerId);
+  if (containerElement) {
+    Object.keys(list).forEach((key) => {
+      containerElement.innerHTML += `<p>${key}: ${list[key]}</p>`;
+    });
+  }
 }
 
 function fillStatistics(transactions: Transaction[]): void {
   const data = new Statistics(transactions);
 
+  fillList(data.payment, "payment");
+  fillList(data.status, "status");
+
   const totalElement = document.querySelector<HTMLElement>("#total span");
   if (totalElement) {
-    totalElement.innerHTML = data.total.toLocaleString("pt-br", {
-      style: "currency",
-      currency: "BRL",
-    });
+    const total = Number(data.total);
+    if (!isNaN(total)) {
+      totalElement.innerHTML = total.toLocaleString("pt-br", {
+        style: "currency",
+        currency: "BRL",
+      });
+    } else {
+      console.error("Total is not a number:", data.total);
+    }
   }
-  console.log(data.total);
+
+  const dayElement = document.querySelector<HTMLElement>("#dia span");
+  if (dayElement) {
+    dayElement.innerHTML = data.bestDay[0];
+  }
 }
 
 function fillTable(transactions: Transaction[]): void {
-  const table = document.querySelector("#transactions tbody");
+  const table = document.querySelector("#transacoes tbody");
   if (!table) return;
   transactions.forEach((transaction) => {
     table.innerHTML += `
