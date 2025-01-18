@@ -1,18 +1,19 @@
 import coinToNumber from "./coinToNumber.js";
 import stringToDate from "./stringToDate.js";
 function normalizeStatus(status) {
-    switch (status) {
-        case "Paga":
-        case "Recusada pela operadora de cartão":
-        case "Aguardando pagamento":
-        case "Estornada":
-            return status;
-        default:
-            throw new Error(`Status inválido: ${status}`);
+    const validStatuses = [
+        "Paga",
+        "Recusada pela operadora de cartão",
+        "Aguardando pagamento",
+        "Estornada",
+    ];
+    if (validStatuses.includes(status)) {
+        return status;
     }
+    throw new Error(`Status inválido: ${status}`);
 }
 export default function normalizeTransaction(transaction) {
-    return {
+    const normalizedTransaction = {
         name: transaction.Nome,
         id: transaction.ID,
         date: stringToDate(transaction.Data),
@@ -23,5 +24,7 @@ export default function normalizeTransaction(transaction) {
         payment: transaction["Forma de Pagamento"],
         new: Boolean(transaction["Cliente Novo"]),
     };
+    console.log("Normalized Transaction:", normalizedTransaction);
+    return normalizedTransaction;
 }
 //# sourceMappingURL=normalizeTransaction.js.map

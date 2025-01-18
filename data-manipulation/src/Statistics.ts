@@ -1,6 +1,7 @@
-import countBy from "./countBy.js";
+import countBy, { CountList } from "./countBy.js";
 
 type TransactionValue = Transaction & { value: number };
+
 function filterValue(
   transaction: Transaction,
 ): transaction is TransactionValue {
@@ -9,11 +10,12 @@ function filterValue(
 
 export default class Statistics {
   private transactions: Transaction[];
-  total;
-  payment;
-  status;
-  week;
-  bestDay;
+  total: number;
+  payment: CountList;
+  status: CountList;
+  week: CountList;
+  bestDay: [string, number];
+
   constructor(transactions: Transaction[]) {
     this.transactions = transactions;
     this.total = this.setTotal();
@@ -22,43 +24,47 @@ export default class Statistics {
     this.week = this.setWeek();
     this.bestDay = this.setBestDay();
   }
-  private setTotal() {
-    const filted = this.transactions.filter(filterValue).reduce((acc, item) => {
-      return acc + item.value;
-    }, 0);
+
+  private setTotal(): number {
+    const total = this.transactions
+      .filter((transaction) => transaction.value != null)
+      .reduce((acc, item) => acc + (item.value || 0), 0);
+    console.log("Total calculated:", total);
+    return total;
   }
-  private setPayment() {
+
+  private setPayment(): CountList {
     return countBy(this.transactions.map(({ payment }) => payment));
   }
-  private setStatus() {
+
+  private setStatus(): CountList {
     return countBy(this.transactions.map(({ status }) => status));
   }
 
-  private setWeek() {
-    const week = {
-      ["Domingo"]: 0,
-      ["Segunda"]: 0,
-      ["Terça"]: 0,
-      ["Quarta"]: 0,
-      ["Quinta"]: 0,
-      ["Sexta"]: 0,
-      ["Sabado"]: 0,
-    };
-    for (let i = 0; i < this.transactions.length; i++) {
-      const day = this.transactions[i].date.getDay();
-      if (day === 0) week["Domingo"] += 1;
-      if (day === 1) week["Segunda"] += 1;
-      if (day === 2) week["Terça"] += 1;
-      if (day === 3) week["Quarta"] += 1;
-      if (day === 4) week["Quinta"] += 1;
-      if (day === 5) week["Sexta"] += 1;
-      if (day === 6) week["Sabado"] += 1;
-    }
+  private setWeek(): CountList {
+    const weekDays = [
+      "Domingo",
+      "Segunda",
+      "Terça",
+      "Quarta",
+      "Quinta",
+      "Sexta",
+      "Sábado",
+    ];
+    const week: CountList = weekDays.reduce(
+      (acc, day) => ({ ...acc, [day]: 0 }),
+      {},
+    );
+
+    this.transactions.forEach(({ date }) => {
+      const day = weekDays[date.getDay()];
+      week[day] += 1;
+    });
+
     return week;
   }
-  private setBestDay() {
-    return Object.entries(this.week).sort((a, b) => {
-      return b[1] - a[1];
-    })[0];
+
+  private setBestDay(): [string, number] {
+    return Object.entries(this.week).sort((a, b) => b[1] - a[1])[0];
   }
 }

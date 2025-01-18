@@ -9,6 +9,7 @@ async function handleData() {
   );
   if (!data) return;
   const transactions = data.map(normalizeTransaction);
+  console.log("Normalized Transactions:", transactions);
   fillTable(transactions);
   fillStatistics(transactions);
 }
@@ -24,21 +25,17 @@ function fillList(list: CountList, containerId: string): void {
 
 function fillStatistics(transactions: Transaction[]): void {
   const data = new Statistics(transactions);
+  console.log("Total from Statistics:", data.total);
 
   fillList(data.payment, "payment");
   fillList(data.status, "status");
 
   const totalElement = document.querySelector<HTMLElement>("#total span");
   if (totalElement) {
-    const total = Number(data.total);
-    if (!isNaN(total)) {
-      totalElement.innerHTML = total.toLocaleString("pt-br", {
-        style: "currency",
-        currency: "BRL",
-      });
-    } else {
-      console.error("Total is not a number:", data.total);
-    }
+    totalElement.innerHTML = data.total.toLocaleString("pt-br", {
+      style: "currency",
+      currency: "BRL",
+    });
   }
 
   const dayElement = document.querySelector<HTMLElement>("#dia span");
@@ -59,7 +56,7 @@ function fillTable(transactions: Transaction[]): void {
         <td>${transaction.payment}</td>
         <td>${transaction.status}</td>
       </tr>
-      `;
+    `;
   });
 }
 
