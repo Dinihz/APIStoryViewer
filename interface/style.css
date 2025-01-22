@@ -82,7 +82,7 @@ h1 {
 #slide-thumb .thumb-item.active {
     display: block;
     height: inherit;
-    background: blue;
+    background: #00cada;
     border-radius: 4px;
     transform: translateX(-100%);
     animation: thumb forwards 3s linear running;
