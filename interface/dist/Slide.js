@@ -16,7 +16,9 @@ export default class Slide {
         this.time = time;
         this.timeout = null;
         this.pausedTimeout = null;
-        this.index = 0;
+        this.index = localStorage.getItem("activeSlide")
+            ? Number(localStorage.getItem("activeSlide"))
+            : 0;
         this.slide = this.slides[this.index];
         this.paused = false;
         this.init();
@@ -30,6 +32,7 @@ export default class Slide {
         this.slides.forEach((el) => el.classList.remove("active"));
         this.slide.classList.add("active");
         this.auto(this.time);
+        localStorage.setItem("activeSlide", String(this.index));
     }
     auto(time) {
         if (this.paused)
@@ -50,6 +53,7 @@ export default class Slide {
     pause() {
         console.log("pause");
         this.pausedTimeout = new Timeout(() => {
+            this.timeout?.pause();
             this.paused = true;
         }, 300);
     }
@@ -58,7 +62,7 @@ export default class Slide {
         this.pausedTimeout?.clear();
         if (this.paused) {
             this.paused = false;
-            this.auto(this.time);
+            this.timeout?.continue();
         }
     }
     addControls() {
