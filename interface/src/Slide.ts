@@ -8,8 +8,10 @@ export default class Slide {
   index: number;
   slide: Element;
   timeout: Timeout | null;
-  paused: boolean;
   pausedTimeout: Timeout | null;
+  paused: boolean;
+  thumbItems: HTMLElement[] | null;
+  thumb: HTMLElement | null;
 
   constructor(
     container: Element,
@@ -28,6 +30,8 @@ export default class Slide {
       : 0;
     this.slide = this.slides[this.index];
     this.paused = false;
+    this.thumbItems = null;
+    this.thumb = null;
 
     this.init();
   }
@@ -41,11 +45,18 @@ export default class Slide {
     this.slide.classList.add("active");
     this.auto(this.time);
     localStorage.setItem("activeSlide", String(this.index));
+
+    if (this.thumbItems) {
+      this.thumb = this.thumbItems[this.index];
+      this.thumbItems.forEach((el) => el.classList.remove("active"));
+      this.thumb.classList.add("active");
+    }
   }
   auto(time: number) {
     if (this.paused) return;
     this.timeout?.clear();
     this.timeout = new Timeout(() => this.next(), time);
+    if (this.thumb) this.thumb.style.animationDuration = `${time}`;
   }
 
   prev() {
@@ -59,18 +70,20 @@ export default class Slide {
     this.show(next);
   }
   pause() {
-    console.log("pause");
+    document.body.classList.add("paused");
     this.pausedTimeout = new Timeout(() => {
       this.timeout?.pause();
+      this.thumb?.classList.add("paused");
       this.paused = true;
     }, 300);
   }
   continue() {
-    console.log("continue");
+    document.body.classList.remove("paused");
     this.pausedTimeout?.clear();
     if (this.paused) {
       this.paused = false;
       this.timeout?.continue();
+      this.thumb?.classList.remove("paused");
     }
   }
 
@@ -83,11 +96,22 @@ export default class Slide {
     this.controls.appendChild(nextButton);
     this.controls.addEventListener("pointerdown", () => this.pause());
     this.controls.addEventListener("pointerup", () => this.continue());
+    this.controls.addEventListener("touchend", () => this.continue());
     prevButton.addEventListener("pointerup", () => this.prev());
     nextButton.addEventListener("pointerup", () => this.next());
   }
+  private addThumbItems() {
+    const thumbContainer = document.createElement("div");
+    thumbContainer.id = "slide-thumb";
+    for (let i = 0; i < this.slides.length; i++) {
+      thumbContainer.innerHTML += `<span><span class="thumb-item"></span></span>`;
+    }
+    this.controls.appendChild(thumbContainer);
+    this.thumbItems = Array.from(document.querySelectorAll(".thumb-item"));
+  }
   private init() {
     this.addControls();
+    this.addThumbItems();
     this.show(this.index);
   }
 }
