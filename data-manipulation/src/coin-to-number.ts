@@ -7,5 +7,5 @@
 export default function coinToNumber(coin: string): number | null {
   const number = Number(coin.replaceAll(".", "").replace(",", "."));
   console.log(`Converting coin: ${coin} to number: ${number}`);
-  return isNaN(number) ? null : number;
+  return isNaN(number) ? 0 : number;
 }

@@ -1,36 +1,35 @@
-import coinToNumber from "./coinToNumber.js";
-import stringToDate from "./stringToDate.js";
+import coinToNumber from "./coin-to-number.js";
+import stringToDate from "./string-to-date.js";
 
-declare global {
-  type PaymentTransaction = "Boleto" | "Cartão de Crédito";
-  type StatusTransaction =
-    | "Paga"
-    | "Recusada pela operadora de cartão"
-    | "Aguardando pagamento"
-    | "Estornada";
+export type PaymentTransaction = "Boleto" | "Cartão de Crédito";
 
-  interface TransactionAPI {
-    Nome: string;
-    ID: number;
-    Data: string;
-    Status: string;
-    Email: string;
-    ["Valor (R$)"]: string;
-    ["Forma de Pagamento"]: PaymentTransaction;
-    ["Cliente Novo"]: number;
-  }
+export type StatusTransaction =
+  | "Paga"
+  | "Recusada pela operadora de cartão"
+  | "Aguardando pagamento"
+  | "Estornada";
 
-  interface Transaction {
-    name: string;
-    id: number;
-    date: Date;
-    status: StatusTransaction;
-    email: string;
-    coin: string;
-    value: number | null;
-    payment: PaymentTransaction;
-    new: boolean;
-  }
+export interface TransactionAPI {
+  Nome: string;
+  ID: number;
+  Data: string;
+  Status: string;
+  Email: string;
+  ["Valor (R$)"]: string;
+  ["Forma de Pagamento"]: PaymentTransaction;
+  ["Cliente Novo"]: number;
+}
+
+export interface Transaction {
+  name: string;
+  id: number;
+  date: Date;
+  status: StatusTransaction;
+  email: string;
+  coin: string;
+  value: number | null;
+  payment: PaymentTransaction;
+  new: boolean;
 }
 
 function normalizeStatus(status: string): StatusTransaction {

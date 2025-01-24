@@ -1,7 +1,8 @@
-import fetchData from "./fetchData.js";
-import normalizeTransaction from "./normalizeTransaction.js";
+import fetchData from "./fetch-data.js";
+import normalizeTransaction from "./normalize-transaction.js";
 import Statistics from "./Statistics.js";
-import { CountList } from "./countBy.js";
+import { CountList } from "./count-by.js";
+import { Transaction, TransactionAPI } from "./normalize-transaction.js";
 
 async function handleData() {
   const data = await fetchData<TransactionAPI[]>(
