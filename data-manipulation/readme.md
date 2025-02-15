@@ -45,7 +45,7 @@ This project is a TypeScript exercise designed to analyze and display data from 
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Dinihz/APIStoryViewer.git
    ```
 
 2. Install dependencies:
